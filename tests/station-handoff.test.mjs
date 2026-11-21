@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {eligibleStations,planStationHandoff} from '../engine/station-handoff.mjs';
+const user='user1';
+const station={id:'stationA',owner_id:user,max_rating:'PG-13',can_stage_comedy:true,can_upload:true,entitlement_active:true,adult_content_enabled:false,age_gate_verified:false};
+const routine={title:'Routine',settings:{rating:'PG-13'}};
+test('restricts selection to authorized eligible stations',()=>{assert.equal(eligibleStations({stations:[station],rating:'PG-13',ownerId:user}).length,1);assert.equal(eligibleStations({stations:[station],rating:'PG-13',ownerId:'other'}).length,0)});
+test('blocks R rated clips from clean and unverified adult destinations',()=>{assert.equal(eligibleStations({stations:[station],rating:'R',ownerId:user}).length,0);assert.equal(eligibleStations({stations:[{...station,max_rating:'R'}],rating:'R',ownerId:user}).length,0);assert.equal(eligibleStations({stations:[{...station,max_rating:'R',adult_content_enabled:true,age_gate_verified:true}],rating:'R',ownerId:user}).length,1)});
+test('refuses missing entitlement and station uploads',()=>{assert.equal(eligibleStations({stations:[{...station,entitlement_active:false}],rating:'PG',ownerId:user}).length,0);assert.equal(eligibleStations({stations:[{...station,can_upload:false}],rating:'PG',ownerId:user}).length,0)});
+test('requires reviewed approved master and rights',()=>{assert.throws(()=>planStationHandoff({routine,station,ownerId:user}));assert.throws(()=>planStationHandoff({routine,station,ownerId:user,approved:true}));const r=planStationHandoff({routine,station,ownerId:user,approved:true,rightsConfirmed:true});assert.equal(r.station_id,'stationA');assert.equal(r.dispatchAuthorized,false);assert.equal(r.state,'staging_request_only')});

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 560" role="img" aria-label="MAESTRO Comedy Club logo with golden microphone and red velvet stage">
+<defs><radialGradient id="v"><stop stop-color="#8e2633"/><stop offset="1" stop-color="#2a0813"/></radialGradient><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ffe8ab"/><stop offset=".45" stop-color="#efbc66"/><stop offset="1" stop-color="#a86c2a"/></linearGradient></defs>
+<path d="M330 18C506 18 632 139 632 292S506 548 330 548 28 426 28 292 154 18 330 18Z" fill="url(#v)" stroke="url(#g)" stroke-width="15"/>
+<path d="M50 90Q95 150 117 228Q135 155 151 57M610 90Q565 150 543 228Q525 155 509 57" stroke="#ad3046" stroke-width="54" fill="none" opacity=".8"/>
+<g transform="translate(297 63)"><rect x="0" y="0" width="68" height="113" rx="32" fill="url(#g)" stroke="#704019" stroke-width="5"/><g stroke="#4a261b" stroke-width="8"><path d="M8 26h52M8 46h52M8 66h52M8 86h52"/></g><path d="M34 112v65M12 178h44" fill="none" stroke="url(#g)" stroke-width="10"/></g>
+<text x="330" y="323" font-family="Georgia,serif" font-weight="bold" font-style="italic" font-size="119" text-anchor="middle" fill="url(#g)" stroke="#4b230e" stroke-width="2">Maestro</text>
+<rect x="73" y="350" width="514" height="93" rx="35" fill="#1c1115" stroke="url(#g)" stroke-width="9"/>
+<text x="330" y="412" font-family="Arial,sans-serif" font-weight="bold" letter-spacing="9" font-size="41" text-anchor="middle" fill="#f4ddaa">COMEDY CLUB</text>
+<g fill="#f5c477"><circle cx="115" cy="392" r="6"/><circle cx="545" cy="392" r="6"/></g>
+</svg>

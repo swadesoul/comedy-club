@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 480" role="img" aria-label="Jamal original illustrated comedian portrait">
+ <defs><radialGradient id="g"><stop stop-color="#b68b60" stop-opacity=".9"/><stop offset="1" stop-color="#342442"/></radialGradient>
+ <pattern id="dots" width="23" height="23" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="#fff" opacity=".09"/></pattern>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7db9b"/><stop offset="1" stop-color="#9c713c"/></linearGradient></defs>
+ <rect width="488" height="480" fill="#342442"/><rect width="488" height="480" fill="url(#g)"/><rect width="488" height="480" fill="url(#dots)"/>
+ <path d="M0 0Q125 132 82 480H0ZM488 0Q361 132 406 480H488Z" fill="#4a1025" opacity=".7"/>
+ <ellipse cx="244" cy="449" rx="188" ry="28" fill="#09070c" opacity=".4"/>
+ <path d="M200 309H287V383H200Z" fill="#81533f"/>
+ <path d="M72 460Q85 355 193 343L243 378 293 343Q399 355 415 460Z" fill="#c48a37"/><path d="M195 350L244 406 291 350" fill="none" stroke="#e6c49c" stroke-width="7"/>
+ <ellipse cx="244" cy="237" rx="99" ry="118" fill="#81533f"/>
+ <path d="M149 227Q125 205 139 247Q147 276 155 265M341 228Q365 202 349 248Q344 275 336 262" fill="#81533f"/>
+ <path d="M157 187Q181 125 252 121Q317 126 329 188Q244 154 157 187Z" fill="#1f1a25"/>
+ <g stroke="#3e2b2a" stroke-width="6" stroke-linecap="round"><path d="M188 233h35"/><path d="M264 233h35"/></g>
+ <path d="M229 285q15 8 31 0" fill="none" stroke="#7f4637" stroke-width="4"/>
+ <path d="M208 307q38 27 76 0" fill="none" stroke="#5f342f" stroke-width="6" stroke-linecap="round"/>
+ <path d="M203 289Q224 276 246 290Q266 276 286 290" stroke="#362626" stroke-width="9" fill="none"/>
+ <g transform="translate(361 264) rotate(11)"><path d="M0 0V192" stroke="#ded0c1" stroke-width="8"/><rect x="-16" y="-38" width="31" height="61" rx="15" fill="url(#gold)" stroke="#5f4027" stroke-width="3"/><path d="M-12 -7h25M-11 6h23M-10 18h20" stroke="#4c3423" stroke-width="5"/></g>
+ <rect x="14" y="14" width="460" height="452" rx="14" fill="none" stroke="#e4ba6c" stroke-width="3" opacity=".65"/>
+ </svg>

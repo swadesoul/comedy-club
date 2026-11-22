@@ -119,5 +119,5 @@ ws.on('message',raw=>{
 });
 ws.on('error',e=>{process.stderr.write('LIVE_SOCKET_ERROR '+e.message+'\n');finish('socket error')});
 ws.on('close',()=>finish('connection closed without terminal receipt'));
-setTimeout(()=>{if(!closed)finish('absolute timeout')},Math.max(25000,(duration+18)*1000));
+setTimeout(()=>{if(!closed)finish('absolute timeout')},Math.max(25000,(duration+18)*1000)).unref();
 

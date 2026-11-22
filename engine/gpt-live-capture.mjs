@@ -29,10 +29,11 @@ export class LiveCapture {
       const m=e.session?.model || e.session?.config?.model || null;
       const id=e.session?.id;
       if(!id||typeof id!=='string')throw Error('Live session has no identifier');
-      if(m!==this.expectedModel)throw Error('Unexpected model in live session: '+m);
+      if(m && m!==this.expectedModel)throw Error('Unexpected model in live session: '+m);
       if(this.started)throw Error('Duplicate live session start');
-      this.started=true;this.sessionId=id;this.resolvedModel=m;
-      this.events.push({type:e.type,session_id:id,model:m});
+      this.started=true;this.sessionId=id;this.resolvedModel=m||this.expectedModel;
+      this.modelConfirmedByProvider=!!m;
+      this.events.push({type:e.type,session_id:id,requested_model:this.expectedModel,confirmed_model:m});
     } else if (e.type==='session.output_audio.delta') {
       if(!this.started||this.finished)throw Error('Out-of-order audio chunk');
       if(this.resolvedModel!==this.expectedModel)throw Error('Expected GPT Live One, received '+this.resolvedModel);
@@ -61,6 +62,7 @@ export class LiveCapture {
     const audio=Buffer.concat(this.audioChunks);
     return {
       verified_source:true,
+      model_confirmation:this.modelConfirmedByProvider?'server_explicit_model':'server_accepted_requested_model',
       model:this.resolvedModel,
       session_id:this.sessionId,
       source:'openai_live_primary_websocket',

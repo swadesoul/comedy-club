@@ -42,3 +42,13 @@ test('rejects chunks before session.started',()=>{
  const c=new LiveCapture();
  assert.throws(()=>c.ingest({type:'session.output_audio.delta',delta:samples.toString('base64')}),/Out-of-order/);
 });
+
+test('accepts official session.started with ID and status but no echoed model',()=>{
+ const c=new LiveCapture();
+ c.ingest({type:'session.started',session:{id:'live-official-sample',expires_at:1788307200,status:'active'}});
+ c.ingest({type:'session.output_audio.delta',delta:samples.toString('base64')});
+ c.ingest({type:'session.closed',reason:'close_requested'});
+ const receipt=c.receipt();
+ assert.equal(receipt.model_confirmation,'server_accepted_requested_model');
+ assert.equal(receipt.model,'gpt-live-1.1');
+});

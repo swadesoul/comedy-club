@@ -66,6 +66,17 @@ def create_draft(f,actor,b):
         select='id,title,rating,state,comedian_id,created_at')
     return {'ok':True,'routine':rows[0]}
 
+def review_audio(f,actor,routine_id):
+    try:rid=f.uid(routine_id)
+    except Exception:fail('Invalid routine.',404)
+    rows=f.db('comedy_routines',filters={'id':'eq.'+rid,'owner_id':'eq.'+actor['id']},
+        select='id,audio_b2_key,state',limit=1)
+    if not rows or not rows[0].get('audio_b2_key'):fail('No actual audio ready for review.',404)
+    key=rows[0]['audio_b2_key']
+    if not key.startswith('comedy/review/'+actor['id']+'/'+rid+'/'):
+        fail('Review audio path failed tenant check.',403)
+    return {'ok':True,'audio_url':f.signed(key),'expires_seconds':900,'state':rows[0]['state']}
+
 def receive_upload(handler):
     try:length=int(handler.headers.get('Content-Length','0'))
     except ValueError:fail('Invalid upload length.',400)
@@ -120,8 +131,10 @@ def asset_url(f,actor,aid):
 
 def list_private(f,actor):
     drafts=f.db('comedy_routines',filters={'owner_id':'eq.'+actor['id']},
-        select='id,comedian_id,title,script,rating,state,rights_confirmed,duration_ms,created_at',
+        select='id,comedian_id,title,script,rating,state,rights_confirmed,duration_ms,audio_b2_key,created_at',
         order='created_at.desc',limit=200)
+    for draft in drafts:
+        draft['audio_ready']=bool(draft.pop('audio_b2_key',None))
     plans=f.db('comedy_batch_plans',filters={'owner_id':'eq.'+actor['id']},
         select='id,request_id,routine_ids,status,created_at',order='created_at.desc',limit=100)
     assets=f.db('comedy_assets',filters={'owner_id':'eq.'+actor['id']},
@@ -230,6 +243,8 @@ def handle(handler,method,f):
             handler.end_headers()
             return
         actor=auth(f,handler)
+        if path.startswith('/comedy/review/') and method=='GET':
+            return handler.respond(200,review_audio(f,actor,path.rsplit('/',1)[-1]))
         if path=='/comedy/assets' and method=='POST':
             return handler.respond(201,create_image(f,actor,handler))
         if path.startswith('/comedy/assets/') and method=='GET':

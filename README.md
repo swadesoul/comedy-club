@@ -1,36 +1,48 @@
-# MAESTRO COMEDY CLUB — Studio Foundation
+# MAESTRO COMEDY CLUB
 
-**Status: source-only implementation. Not deployed or connected to live speech generation/radio.**
+**Live database-backed public Comedy Club and authenticated producer studio.**
+Production certification: **PARTIAL**. First real audio draft staged for owner listening review; no public audio or radio slot spin is released until verified and approved.
 
-A shared production engine for SWADEBASE Admin and MAESTRO RADIO Admin, with RESINGLAB as the creative source for voice, speech, audience stems and final audio. MAESTRO is the station, catalog, scheduling and broadcast authority. Do not duplicate their identity, storage, workers, voice service or scheduler.
+## Live product routes
 
-## Working prototype
-Open `studio/index.html`: cinematic responsive Comedy Club Studio. Choose fictional comedian, age-rating (PG, PG-13, R), room size (25/50/100/150/250), crowd work, callbacks, and duration. Write/import text routines, create multiple drafts, prepare ten-routine planning batches, preview cue timelines and download a structured per-routine production manifest. It is **offline only**; buttons do not call speech providers, consume credits or broadcast content.
+- Listener catalog: https://themaestroradio.com/comedy-club/ and https://swadebase.cloud/comedy-club/
+- Real Studio: https://themaestroradio.com/comedy-studio/ and https://swadebase.cloud/comedy-studio/
+- Real public JSON (read-only): /comedy-api/public on both origins
+- Legacy /comedy-studio-preview/ redirects to the real studio; the mock-style offline prototype was retired.
 
-`engine/comedy.mjs`: reusable pure validators and production planning with starter 5-second liner, segmented stems, crowd-response alignment, callback map and batch limits. `tests/comedy.test.mjs`: regression coverage using built-in Node test runner.
+## What actually works
 
-## Native integration contract (not yet built)
-Mount versioned, authenticated and tenant-scoped routes into existing SWADEBASE adapter runtime; expose the same capability through MAESTRO admin. Reuse owner/tenant session checks, scoped MAESTRO staff role, existing RESINGLAB Speech/Voice Design and Backblaze B2.
+- The public page fetches the real SWADEBASE-hosted PostgreSQL `maestroradio.comedy_comedians` and published `comedy_routines` records through the existing MAESTRO Python factory, not hardcoded content.
+- Six original official comedian personas have durable `in_development` records, distinct original illustration assets, real profile URLs and honest pre-release labels. No sample performer rows, fake plays, invented listening numbers or fake audio.
+- The authorized Studio saves real script drafts, accepts .txt script imports, confirms rights, uploads JPG/PNG/WebP media (up to 5MiB) to existing Backblaze B2 after image validation, and persists up to ten selected owned scripts in a zero-credit batch plan.
+- Batch manifest records chosen real comedian, rating, audience size, callback/crowd-work preferences, acoustic preset, owned art ID, and an optional real eligible MAESTRO station.
+- Stations come from the actual tenant-scoped MAESTRO station library; R rated content is excluded from general-audience stations. No autopublishing.
+- The first user-approved Marcus `Smart House` routine is a **real** 179.952-second stereo MP3 produced by existing local Kokoro CPU speech with separately rendered speakers and licensed public-domain/CC0 applause and laughter; stored and checksum-verified in existing B2, status `needs_review`. It is accessible only to its authorized owner in the Studio's **Review audio** control.
+- 16 Node tests passed at rollout, Nginx and private MAESTRO factory checked. Unauthenticated writes return HTTP 401.
 
-- `POST /v1/comedy/routines`: ingest authored or rights-attested imported routine; preserve original and version history
-- `POST /v1/comedy/batches/plan`: idempotent, no-cost plan with explicit selected settings and immutable prompt manifest
-- `POST /v1/comedy/batches/{id}/authorize`: verified authorized owner and capped spend
-- `POST /v1/comedy/batches/{id}/dispatch`: existing durable queue, bounded providers, no blind retry
-- `GET /v1/comedy/batches/{id}`: durable status and individual outcomes
-- `POST /v1/comedy/routines/{id}/approve`: listening, rights, audio, content and QA gate
-- `POST /v1/comedy/routines/{id}/maestro-stage`: dedicated comedy station library, never silently schedule or change flagship
+## Production source and infrastructure
 
-States: draft → planned → authorized → rendering → needs_review → approved → staged → scheduled. Failed/uncertain jobs stop for reconciliation. Keep original stems and script, checksums, voice consent and rights, cue sheet, callback map, provider receipts, identity and approval metadata in SWADEBASE/B2. No automatic provider dispatch or payments simply from batch planning. PG/PG-13/R are internal labels, not official film ratings; R restricted to approved adult stream, legal/platform age requirements separately enforced.
+- `public/index.html` + `public/comedians/*` and `public/assets/*`: listener experience and original artwork
+- `studio/production.html`: real session-backed studio; no stored demo content
+- `engine/comedy_studio.py`: versioned module for the **existing** private MAESTRO factory, mounted at `/comedy/*` inside its current handler (do not start a duplicate service).
+- `engine/20261122_comedy_catalog.sql`, `engine/20261122_comedy_assets.sql`, `engine/20261122_comedy_batches.sql`: private database tables, owner controls, production plans and B2 media metadata. Schema belongs to existing self-hosted SWADEBASE Postgres; service role only and RLS enabled; never exposes a public write endpoint.
+- `scripts/render_approved_pilot.py`: first offline zero-vendor-cost original render. Server-only voice token, never commit secrets. See `docs/PILOT_001_REAL_AUDIO_RECEIPT.md`.
 
-## Acceptance criteria for actual live release
-- Registry and current site Bibles reconciled; same existing SWADEBASE and MAESTRO adapters reused
-- Owner/tenant checks and audit log; rights and voice consent; no vendor API key in browser
-- Ten routine batch crash/retry safety and explicit cost ceiling
-- Per-word punchline end, audience reactions with natural decay and no masked dialogue; callbacks at end
-- Five-second reusable liner; final clip ≤180 seconds including intro
-- R-rated content excluded from PG/PG-13 and general queues
-- Existing ReSingLab audio provider render verified, existing B2 readback verified
-- Human acceptance, explicit MAESTRO station handoff and real preview/airplay checks
-- Desktop, mobile, iPad Safari and rollback verified; Bibles and private What's New updated
+## Owner and customer protections
 
-No launch claim until these checks pass.
+- Production saves require valid existing sign-in and currently restricted MAESTRO administrator role; tenant-facing $250 setup/$99 recurring customer checkout is **not** launched or certified.
+- No user-facing generated audio is represented as finished without actual audio file, verified provenance, acceptable timing, rights, reviewer approval and eligible station.
+- Published audio must have `state=published`, source in the `comedy/approved/` B2 namespace, ownership/rights confirmation, measured duration and audio-review timestamp. R-rated masters are not exposed via public API until an actual protected adult stream is verified.
+- No paid provider used for the pilot. SWADEBASE founder/admin platform charges stay exempt, but external provider costs still require caps.
+- Only existing MAESTRO/AzuraCast station scheduler can schedule an approved master. No direct broadcast until station-specific human authorization. Maestro Mix uses its existing real game: it cannot feature an unreleased routine.
+
+## Remaining acceptance gates
+
+1. **Listen and approve or request revisions** to pilot audio; dynamic laughter timing still needs subjective review. Only then promote from B2 private review to `comedy/approved/`, set reviewer audit timestamp, publish if license/rating compliant.
+2. Verify real customer login, first-time logo/photo upload, B2 retrieval, script and batch save in desktop/iPad Safari, not just server/integration tests; no claim of customer on-boarding certification yet.
+3. Implement reusable multi-routine render worker via existing RESINGLAB/voice adapters, provider cost cap, durable job progress, retries and QA; currently real *batch planning* is available, not automated audio execution.
+4. Implement final authenticated MAESTRO media staging and actual station playlist readback, and optional Maestro Mix reel promotion only for published approved audio.
+5. Complete Stripe products, checkout, subscription entitlements and webhooks with real cancellation and usage lifecycle tests before charging any customer.
+6. Obtain approval for final brand artwork/cast portraits if future images replace current original SVG illustrations.
+
+See release record `docs/DEPLOYMENT_20261122.md` for evidence, restrictions and rollback.

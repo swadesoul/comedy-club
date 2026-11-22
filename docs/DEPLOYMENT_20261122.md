@@ -17,6 +17,6 @@ Real customer session visual QA, first image upload via actual signed-in browser
 
 ## Recovery
 - Existing radio sources, playlists, PWA and music streams are unchanged.
-- Nginx backups: `/opt/swadebase/backups/comedy-api-20261122T094228Z`, `/opt/swadebase/backups/comedy-studio-live-20261122T094713Z` (check actual generated directories), and `/opt/swadebase/backups/comedy-remove-preview-20261122T095151Z`.
+- Nginx backups: `/opt/swadebase/backups/comedy-api-20261122T094228Z`, `/opt/swadebase/backups/comedy-studio-live-20261122T094712Z` (check actual generated directories), and `/opt/swadebase/backups/comedy-remove-preview-20261122T095151Z`.
 - Original pre-adapter factory handler reproducible from `/opt/swadebase/backups/comedy-api-ROLLBACK_FACTORY.py`; do not overwrite newer unrelated work while restoring. Roll back selectively, validate `nginx -t` and restore/restart only the affected factory if necessary.
 - Preserve tables, licensed media assets, and author records on rollback; do not delete real customer content.

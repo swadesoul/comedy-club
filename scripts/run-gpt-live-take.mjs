@@ -17,6 +17,7 @@ if(!Number.isInteger(duration)||duration<5||duration>30)throw Error('Maximum ses
 const dryRun=process.argv.includes('--dry-run');
 const scriptFile=process.env.COMEDY_LIVE_SCRIPT_FILE;
 const source=scriptFile&&existsSync(scriptFile)?readFileSync(scriptFile,'utf8'):'';
+
 const prompt=[
   'You are Marcus, an ORIGINAL fictional stand-up comedian in a small live theater.',
   'Deliver one short comic passage like an authentic live performance: engaged, conversational, precise timing, not a dry audiobook.',
@@ -41,6 +42,7 @@ if(dryRun){
   process.exit(0);
 }
 if(process.env.COMEDY_LIVE_PAID_APPROVED!=='YES')throw Error('Explicit owner-paid-session authorization is missing');
+if(!source||source.length<100)throw Error('An approved script segment file is required');
 const maxUsd=Number(process.env.COMEDY_LIVE_MAX_USD||'0');
 if(!Number.isFinite(maxUsd)||maxUsd<=0||maxUsd>0.10)throw Error('Owner session spend cap must be positive and <= $0.10');
 const upperBound=(duration/60)*0.05;

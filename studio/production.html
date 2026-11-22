@@ -7,6 +7,32 @@
 .saved{padding:9px;background:#201922;border:1px solid #6e4c40;border-radius:8px;margin:6px 0;font-size:12px}
 a{color:var(--gold)}.hero-logo{max-width:80px;max-height:80px;display:block;margin:8px auto}
 @media(max-width:580px){.routine select{max-width:100%;width:100%}}
+</style><style id="studio-guided-design">
+:root{--bg:#100e13;--panel:#1a171e;--gold:#e6b473}
+body{background:#100e13}
+.shell{max-width:1120px;padding:24px 20px}
+.top{margin-bottom:18px}.top h1{font-size:clamp(29px,4vw,45px)}
+.layout{display:flex!important;flex-direction:column;gap:0}
+.studio-steps{display:flex;gap:8px;overflow-x:auto;padding:6px 0 20px;scrollbar-width:thin}
+.studio-step{flex:1;min-width:150px;border:1px solid #50434a;border-radius:12px;background:#201a20;color:#dfd1c8;font-size:13px;font-weight:700;text-align:left;padding:14px 13px}
+.studio-step.active{background:#f0bd79;color:#2a1715;border-color:#f0bd79}
+.studio-step small{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin-bottom:5px}
+.studio-step-panels{width:100%;max-width:100%;display:block}
+.studio-step-panel{display:none}
+.studio-step-panel.active{display:grid;gap:14px}
+.studio-step-panel .card{margin:0!important;overflow:hidden}
+.studio-step-panel .pad{padding:clamp(18px,3vw,30px)}
+.studio-step-panel .stage{height:190px}
+.studio-step-panel .stage .curtain{border-left-width:30px;border-right-width:30px}
+.studio-step-panel .seat-rows{max-height:35px;overflow:hidden}
+.studio-step-panel .routine{min-height:65px}
+.studio-step-panel .field textarea{min-height:260px}
+.studio-direction{display:flex;justify-content:space-between;gap:12px;padding:20px 0}
+.studio-direction button{font-weight:750;padding:12px 18px}
+.studio-direction .primary{min-width:126px}
+.studio-helper{font-size:13px;color:#bfb2ac;padding:0 4px 12px}
+.studio-caption{max-width:740px;line-height:1.5;color:#c6b5aa;margin:4px 0 14px}
+@media(max-width:680px){.studio-step{min-width:135px;padding:11px}.studio-step-panel .stage{height:140px}.room-foot{font-size:10px}}
 </style></head><body>
 <main class="shell">
 <header class="top"><div><div class="brand">SWADEBASE + MAESTRO RADIO / SHARED STUDIO</div><h1>Comedy Club <em>Studio</em></h1></div><span class="tag">LIVE RECORDS · ZERO EXTERNAL GENERATION SPEND</span></header>
@@ -97,5 +123,43 @@ state.token=authToken();if(!state.token){$('authState').innerHTML='Not signed in
 try{await refreshPrivate();update('authState','Authorized studio session detected. Routine drafts, batch plans, station choices and images are loaded from your real account.');}
 catch(e){state.token=null;$('authState').textContent='Your account could not be verified for Comedy Club management: '+e.message+' Sign in to MAESTRO RADIO and try again.'}
 }
+function setupGuidedStudio(){
+const layout=document.querySelector('.layout');
+const cards=[...layout.querySelectorAll('article.card')];
+if(cards.length!==6)throw Error('Studio layout mismatch; do not show incomplete wizard.');
+const steps=[
+{name:'Cast & Stage',hint:'Choose the atmosphere, crowd and visuals',cards:[0,1]},
+{name:'Write',hint:'Select a comedian and create original routines',cards:[2]},
+{name:'Library',hint:'Review saved scripts and real audio',cards:[3]},
+{name:'Produce',hint:'Choose the destination and save a batch plan',cards:[4,5]}
+];
+const nav=document.createElement('nav');nav.className='studio-steps';nav.setAttribute('aria-label','Comedy Studio creation steps');
+const panels=document.createElement('div');panels.className='studio-step-panels';
+const panelsList=[],buttons=[];
+steps.forEach((step,i)=>{
+  const b=document.createElement('button');b.type='button';b.className='studio-step';b.innerHTML='<small>Step '+(i+1)+' of 4</small>';b.append(document.createTextNode(step.name));
+  const panel=document.createElement('section');panel.className='studio-step-panel';panel.id='comedy-step-'+i;panel.setAttribute('aria-label',step.name);
+  const heading=document.createElement('div');heading.className='studio-caption';heading.textContent=step.hint;panel.append(heading);
+  step.cards.forEach(index=>panel.append(cards[index]));
+  b.setAttribute('aria-controls',panel.id);b.onclick=()=>activate(i);
+  nav.append(b);panels.append(panel);buttons.push(b);panelsList.push(panel);
+});
+const actions=document.createElement('div');actions.className='studio-direction';
+const previous=document.createElement('button');previous.type='button';previous.textContent='Back';
+const next=document.createElement('button');next.type='button';next.className='primary';next.textContent='Continue';
+actions.append(previous,next);
+layout.replaceChildren(nav,panels,actions);
+let current=0;
+function activate(index){
+  current=index;
+  panelsList.forEach((p,i)=>{p.classList.toggle('active',i===index);p.hidden=i!==index});
+  buttons.forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-current',i===index?'step':'false')});
+  previous.disabled=index===0;next.hidden=index===steps.length-1;
+}
+previous.onclick=()=>activate(Math.max(0,current-1));
+next.onclick=()=>activate(Math.min(steps.length-1,current+1));
+activate(0);
+}
+setupGuidedStudio();
 main();
 </script></body></html>

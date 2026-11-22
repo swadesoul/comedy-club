@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MAESTRO Comedy Club — Production Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e17;--panel:#181b28;--line:#393546;--gold:#f5c777;--ink:#f9f3e8;--muted:#b8b4b4}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:radial-gradient(ellipse at 52% -22%,#502a38 0%,transparent 50%),var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button,select,input,textarea{border:1px solid #514657;border-radius:10px;background:#24212f;color:var(--ink)}button{cursor:pointer;padding:10px 13px}button:hover{border-color:var(--gold)}button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.primary{background:linear-gradient(120deg,#f6c77c,#d58b51);color:#251522;border:0;font-weight:800}.shell{max-width:1500px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}.brand{font-size:11px;letter-spacing:.28em;color:var(--gold);font-weight:900}.top h1{font:500 clamp(29px,4vw,54px) Georgia,serif;margin:6px 0 0}.tag{border:1px solid #85653f;padding:8px 12px;border-radius:30px;color:var(--gold);font-size:12px}.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,1fr);gap:18px}.card{background:linear-gradient(150deg,#1d202d,#171723);border:1px solid var(--line);border-radius:20px;overflow:hidden}.pad{padding:20px}.eyebrow{font-size:11px;letter-spacing:.17em;color:var(--gold);text-transform:uppercase;font-weight:800}.title{font:500 25px Georgia,serif;margin:7px 0 14px}.stage{height:315px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 20%,#d6a35b44,transparent 36%),linear-gradient(100deg,#2d0f1d 0%,#542d35 14%,#211823 28%,#1b1723 72%,#542d35 87%,#2d0f1d 100%)}.curtain{position:absolute;inset:0;border-left:45px repeating-linear-gradient(90deg,#4e172c,#661d34 8px,#2b101b 18px);border-right:45px repeating-linear-gradient(90deg,#4e172c,#661d34 8px,#2b101b 18px)}.spot{position:absolute;left:30%;top:-120px;width:40%;height:450px;background:linear-gradient(#f7c67d44,transparent);filter:blur(34px);transform:perspective(120px) rotateX(25deg);clip-path:polygon(35% 0,65% 0,100% 100%,0 100%)}.stagefloor{position:absolute;bottom:0;width:100%;height:43px;background:linear-gradient(#503b3b,#160f18)}.mic{position:absolute;bottom:41px;left:50%;width:4px;height:104px;background:#c7af8f;transform:translateX(-50%)}.mic:before{content:'';position:absolute;top:-22px;left:-6px;width:15px;height:24px;border-radius:12px;background:linear-gradient(90deg,#999,#eaeaea,#67666d)}.mic:after{content:'';position:absolute;bottom:-3px;left:-22px;width:48px;height:4px;background:#bfb8b8;border-radius:50%}.club-sign{position:absolute;left:0;right:0;top:49px;text-align:center;color:#fee3b1;font:24px Georgia,serif;text-shadow:0 0 14px #f6b756,0 0 35px #c27053;letter-spacing:.1em}.room-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 18px;color:#c9bda9;font-size:12px}.seat-rows{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px;flex-wrap:wrap;min-height:55px}.seat{display:inline-block;width:11px;height:11px;border-radius:50%;background:#b88a59;box-shadow:0 0 8px #d3a85d55}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:7px;margin:12px 0}.field label{font-size:12px;font-weight:700;color:#d7c8b7}.field select,.field input,.field textarea{padding:10px;min-width:0;width:100%}textarea{resize:vertical;min-height:150px;line-height:1.55}.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:8px 12px;font-size:12px}.chip.active{color:#281927;border-color:var(--gold);background:var(--gold);font-weight:800}.toggle{display:flex;gap:8px;align-items:center;font-size:13px;color:#ddd0c0;margin:12px 0}.toggle input{accent-color:var(--gold)}.routines{display:grid;gap:7px;max-height:256px;overflow:auto}.routine{display:flex;align-items:center;gap:8px;padding:9px;border-radius:10px;background:#2b2634;font-size:12px}.routine label{flex:1;cursor:pointer;overflow-wrap:anywhere}.routine button{padding:5px 8px}.status{font-size:11px;color:#b6d5b9}.note{font-size:12px;color:var(--muted);line-height:1.55}.toolbar{display:flex;gap:9px;flex-wrap:wrap}.timeline{display:flex;gap:2px;height:28px;overflow:hidden;border-radius:5px}.timeline span{background:#a76b57;min-width:5px}.timeline span:nth-child(2n){background:#cc9b59}.timeline span:nth-child(3n){background:#626c85}.timeline span:nth-child(4n){background:#a27aaa}.footer{color:#9e9a9f;font-size:12px;margin-top:20px}#message{min-height:22px;color:#eed39f;font-size:12px} .stage-caption{text-align:center;padding:12px;font-size:12px;letter-spacing:.18em;color:#f0ca8e} @media(max-width:950px){.layout{grid-template-columns:1fr}.shell{padding:12px}.stage{height:250px}.grid2{grid-template-columns:1fr 1fr}}@media(max-width:480px){.grid2{grid-template-columns:1fr}.top{flex-wrap:wrap}.pad{padding:15px}}
+
+.signin{background:#402c31;border:1px solid #aa8260;padding:12px 16px;border-radius:10px;line-height:1.5;font-size:13px}
+.routine select{width:auto;max-width:140px}.routine .status{white-space:nowrap}
+.saved{padding:9px;background:#201922;border:1px solid #6e4c40;border-radius:8px;margin:6px 0;font-size:12px}
+a{color:var(--gold)}.hero-logo{max-width:80px;max-height:80px;display:block;margin:8px auto}
+@media(max-width:580px){.routine select{max-width:100%;width:100%}}
+</style></head><body>
+<main class="shell">
+<header class="top"><div><div class="brand">SWADEBASE + MAESTRO RADIO / SHARED STUDIO</div><h1>Comedy Club <em>Studio</em></h1></div><span class="tag">LIVE RECORDS · ZERO EXTERNAL GENERATION SPEND</span></header>
+<div id="authState" class="signin" role="status">Checking your existing MAESTRO session. Sign-in is required to save routines or upload artwork.</div>
+<section class="layout" style="margin-top:20px">
+<div><article class="card">
+<div class="stage" role="img" aria-label="Theater stage visualization for the comedy club"><div class="curtain"></div><div class="spot"></div><div class="club-sign">MAESTRO COMEDY CLUB</div><div class="stagefloor"></div><div class="mic"></div></div>
+<div class="room-foot"><span>THE ROOM · <strong id="roomSize">100</strong> GUESTS</span><span>LIVE STUDIO CONFIGURATION</span></div>
+<div class="pad"><div class="eyebrow">Audience director</div><h2 class="title">Build the room</h2>
+<div id="roomButtons" class="chips" role="group" aria-label="Choose audience size"></div>
+<div class="seat-rows" id="seats" aria-label="Audience capacity visualization"></div>
+<div class="grid2"><div class="field"><label for="tone">Venue acoustics</label><select id="tone"><option value="intimate">Intimate brick comedy club</option><option value="warm">Warm lounge</option><option value="lively">Large lively hall</option></select></div><div class="field"><label for="laugh">Audience reaction intensity</label><select id="laugh"><option value="subtle">Subtle</option><option selected value="natural">Natural</option><option value="lively">Lively</option></select></div></div>
+<label class="toggle"><input type="checkbox" id="crowd" checked>Allow original audience member conversations</label>
+<label class="toggle"><input type="checkbox" id="callback" checked>Final callbacks: plant a setup and return to it</label>
+</div></article>
+<article class="card" style="margin-top:18px"><div class="pad"><div class="eyebrow">Real studio artwork</div><h2 class="title">Upload your own images</h2>
+<div class="field"><label for="artLabel">Asset label</label><input id="artLabel" placeholder="My club logo, theater background, or owned portrait" maxlength="140"></div>
+<div class="field"><label for="photo">JPG, PNG or WebP image, up to 5 MB</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"></div>
+<label class="toggle"><input type="checkbox" id="imageRights">I own or may use this image commercially and have any required subject consent</label>
+<div class="toolbar"><button class="primary" id="upload">Upload to SWADEBASE media vault</button></div>
+<p id="uploadStatus" class="note" role="status">Artwork is stored only after authenticated upload and B2 verification. No example images are uploaded.</p>
+<div class="field"><label for="asset">Use owned artwork for production</label><select id="asset"><option value="">No uploaded artwork</option></select></div>
+</div></article>
+<article class="card" style="margin-top:18px"><div class="pad"><div class="eyebrow">Original script authoring</div><h2 class="title">Write or import your routine</h2>
+<div class="grid2"><div class="field"><label for="comedian">Verified original comedian</label><select id="comedian"></select></div><div class="field"><label for="rating">Content category</label><select id="rating"><option value="PG">PG — Family</option><option selected value="PG-13">PG-13 — Teen</option><option value="R">R — Adult, private until protected</option></select></div></div>
+<div class="field"><label for="routineTitle">Routine title</label><input id="routineTitle" minlength="3" maxlength="200" placeholder="Name your own original routine"></div>
+<div class="field"><label for="routineScript">Full original script and crowd-work notes</label><textarea id="routineScript" rows="10" maxlength="16000" placeholder="Write the opening setup, escalations, audience interactions and final callback..."></textarea></div>
+<label class="toggle"><input type="checkbox" id="scriptRights">I created this script or have written rights for this production</label>
+<div class="toolbar"><button id="importText">Import owned .txt script</button><input id="textFile" type="file" accept=".txt,text/plain" hidden><button id="saveDraft" class="primary">Save real routine to my account</button></div>
+<p id="saveStatus" role="status" class="note">Saving requires an authenticated authorized studio account. No routine is published automatically.</p>
+</div></article></div>
+<aside>
+<article class="card"><div class="pad"><div class="eyebrow">Your production library</div><h2 class="title">Saved routines</h2><p class="note">These records are retrieved from your account in SWADEBASE. Select up to 10.</p><div class="routines" id="routineList"><p class="note">Sign in to load your real saved routines.</p></div><p id="selectedCount" class="note">0 selected</p></div></article>
+<article class="card" style="margin-top:18px"><div class="pad"><div class="eyebrow">Radio destination</div><h2 class="title">Choose a station</h2><div class="field"><label for="station">After review, request a stage in a station you control</label><select id="station"><option value="">Keep private / decide later</option></select></div><p class="note">Only live stations authorized for your account can appear. R-rated routines cannot enter general-audience stations.</p>
+<div class="eyebrow">Persistent 10-routine batch</div><h2 class="title">Plan the production</h2>
+<div class="toolbar"><button class="primary" id="plan">Save zero-credit batch plan</button></div>
+<p class="note" id="planStatus" role="status">A real batch record will be saved, but audio generation needs separately verified provider authorization and human audio review.</p>
+<div id="batchHistory"></div>
+</div></article>
+<article class="card" style="margin-top:18px"><div class="pad"><div class="eyebrow">Production gate</div><h2 class="title">Review before publishing</h2><p class="note">A finished studio batch must pass separated voice/crowd stem rendering, laughter timing, rights and rating checks, and human listening review before it can stage in any MAESTRO station. No audio is currently auto-published by this console.</p><a href="/comedy-club/" class="tag" style="display:inline-block">Public Comedy Club</a><a href="/maestro-mix/" class="tag" style="display:inline-block;margin-left:6px">Existing Maestro Mix</a></div></article>
+</aside></section>
+<p class="footer">LIVE STUDIO CREATION · Admin access required during customer billing verification · Speech generation and broadcast remain approval gated.</p>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const state={room:100,profiles:[],routines:[],stations:[],assets:[],selected:new Set(),token:null};
+const update=(id,value)=>{$(id).textContent=value};
+function authToken(){
+ try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(!key||!/^sb-.*-auth-token$/.test(key))continue;
+ const v=JSON.parse(localStorage.getItem(key)||'null');const session=Array.isArray(v)?v[0]:v;
+ if(session?.access_token && (!session.expires_at || session.expires_at*1000>Date.now()+1000))return session.access_token;
+ }}catch{}return null;
+}
+async function api(path,{method='GET',body,authenticated=true}={}){
+ const headers={'Accept':'application/json'};if(body)headers['Content-Type']='application/json';
+ if(authenticated){if(!state.token)throw Error('Sign in to MAESTRO RADIO to use this studio.');headers['Authorization']='Bearer '+state.token;}
+ const res=await fetch('/comedy-api'+path,{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store',credentials:'omit'});
+ let data;try{data=await res.json()}catch{throw Error('The server did not return JSON.')}
+ if(!res.ok)throw Error(data.error||'Studio request failed ('+res.status+').');
+ return data;
+}
+function drawRooms(){const group=$('roomButtons');group.replaceChildren();for(const n of [25,50,100,150,250]){const b=document.createElement('button');b.className='chip'+(state.room===n?' active':'');b.textContent=n+' guests';b.onclick=()=>{state.room=n;drawRooms();};group.append(b)}
+ update('roomSize',String(state.room));const seats=$('seats');seats.replaceChildren();for(let i=0;i<Math.min(state.room,100);i++){const d=document.createElement('span');d.className='seat';seats.append(d)}
+ seats.setAttribute('aria-label','Room preset '+state.room+' simulated seats');
+}
+function option(val,text){const o=document.createElement('option');o.value=val;o.textContent=text;return o}
+async function loadPublic(){const data=await api('/public',{authenticated:false});if(data.source!=='maestroradio.comedy_catalog')throw Error('Unverified catalog');state.profiles=data.comedians||[];const picker=$('comedian');picker.replaceChildren();for(const c of state.profiles)picker.append(option(c.id,c.display_name+' · '+c.status));}
+function renderSaved(){const list=$('routineList');list.replaceChildren();if(!state.routines.length){const p=document.createElement('p');p.className='note';p.textContent='No saved routines yet. Write your first one to begin.';list.append(p)}
+ for(const r of state.routines){const row=document.createElement('label');row.className='routine';const check=document.createElement('input');check.type='checkbox';check.checked=state.selected.has(r.id);check.onchange=()=>{if(check.checked)state.selected.add(r.id);else state.selected.delete(r.id);showCount()};const text=document.createElement('span');text.style.flex='1';text.textContent=r.title+' · '+r.rating+' · '+r.state;row.append(check,text);list.append(row)}showCount()}
+function showCount(){update('selectedCount',state.selected.size+' selected of 10 allowed')}
+function showBatches(batches){const root=$('batchHistory');root.replaceChildren();if(!batches?.length)return;root.append(Object.assign(document.createElement('h3'),{textContent:'Saved production batches'}));for(const b of batches){const d=document.createElement('p');d.className='saved';d.textContent=b.routine_ids.length+' routines · '+b.status+' · '+new Date(b.created_at).toLocaleDateString();root.append(d)}}
+async function refreshPrivate(){const [data,s]=await Promise.all([api('/private'),api('/stations')]);state.routines=data.routines||[];state.assets=data.assets||[];state.stations=s.stations||[];renderSaved();showBatches(data.batches);
+const destination=$('station');destination.replaceChildren(option('','Keep private / decide later'));for(const st of state.stations)destination.append(option(st.id,st.name+' · approved station access'));
+const asset=$('asset');asset.replaceChildren(option('','No uploaded artwork'));for(const a of state.assets)asset.append(option(a.id,a.label));}
+$('importText').onclick=()=>$('textFile').click();
+$('textFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>100000){update('saveStatus','Text file exceeds 100 KB.');return}const t=await f.text();$('routineTitle').value=f.name.replace(/\.txt$/i,'');$('routineScript').value=t;update('saveStatus','Imported locally. Confirm ownership, then save to SWADEBASE.');e.target.value='';};
+$('saveDraft').onclick=async()=>{try{if(!$('scriptRights').checked)throw Error('Confirm your rights to this script first.');const data=await api('/drafts',{method:'POST',body:{action:'create',comedian_id:$('comedian').value,title:$('routineTitle').value,script:$('routineScript').value,rating:$('rating').value,rights_confirmed:true}});update('saveStatus','Saved real routine '+data.routine.id+' to your MAESTRO account.');$('routineTitle').value='';$('routineScript').value='';$('scriptRights').checked=false;await refreshPrivate();}catch(e){update('saveStatus',e.message)}};
+$('plan').onclick=async()=>{try{const ids=[...state.selected];if(!ids.length||ids.length>10)throw Error('Select between 1 and 10 saved routines.');
+const plan={request_id:crypto.randomUUID(),routine_ids:ids,station_id:$('station').value||null,studio_settings:{audience_size:state.room,room_tone:$('tone').value,laugh_intensity:$('laugh').value,crowd_work:$('crowd').checked,callback:$('callback').checked,asset_id:$('asset').value||null}};
+const result=await api('/batches/plan',{method:'POST',body:plan});update('planStatus','Saved actual production batch '+result.batch.id+' · state '+result.batch.status+'. No audio generation, broadcast or provider charges triggered.');state.selected.clear();await refreshPrivate();}catch(e){update('planStatus',e.message)}};
+$('upload').onclick=async()=>{try{const f=$('photo').files?.[0];if(!f)throw Error('Choose an image.');if(!['image/png','image/jpeg','image/webp'].includes(f.type)||f.size>5*1024*1024)throw Error('Only JPG, PNG or WebP under 5 MB.');if(!$('imageRights').checked)throw Error('Confirm image ownership and subject consent.');if(!state.token)throw Error('Sign in before uploading.');
+const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(Error('Unable to read image'));reader.readAsDataURL(f)});
+const result=await api('/assets',{method:'POST',body:{label:$('artLabel').value||f.name,mime_type:f.type,base64,rights_confirmed:true}});
+update('uploadStatus','Stored and verified in SWADEBASE media vault: '+result.asset.id);$('photo').value='';$('imageRights').checked=false;await refreshPrivate();$('asset').value=result.asset.id;
+}catch(e){update('uploadStatus',e.message)}};
+async function main(){drawRooms();try{await loadPublic()}catch(e){update('saveStatus','Comedian registry unavailable: '+e.message)}
+state.token=authToken();if(!state.token){$('authState').innerHTML='Not signed in. <a href="https://themaestroradio.com/login?next=%2Fcomedy-studio%2F">Sign in to MAESTRO RADIO</a>, then return here to save actual routines, batch plans and images. This page has no fake or temporary saved records.';return}
+try{await refreshPrivate();update('authState','Authorized studio session detected. Routine drafts, batch plans, station choices and images are loaded from your real account.');}
+catch(e){state.token=null;$('authState').textContent='Your account could not be verified for Comedy Club management: '+e.message+' Sign in to MAESTRO RADIO and try again.'}
+}
+main();
+</script></body></html>

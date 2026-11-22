@@ -4,6 +4,10 @@ Private editing is admin-only pending audited customer entitlements.
 """
 import json
 import re
+import hashlib
+import base64
+import io
+import uuid
 from urllib.parse import urlsplit
 from station_libraries import identity, AccessError, fail
 
@@ -62,6 +66,144 @@ def create_draft(f,actor,b):
         select='id,title,rating,state,comedian_id,created_at')
     return {'ok':True,'routine':rows[0]}
 
+def receive_upload(handler):
+    try:length=int(handler.headers.get('Content-Length','0'))
+    except ValueError:fail('Invalid upload length.',400)
+    if length<10 or length>7*1024*1024:fail('Image must be 5 MB or less.',413)
+    try:body=json.loads(handler.rfile.read(length))
+    except Exception:fail('Invalid upload payload.',400)
+    if not isinstance(body,dict) or body.get('rights_confirmed') is not True:
+        fail('Confirm photo ownership and subject consent, if applicable.',403)
+    label=str(body.get('label') or 'Comedy studio asset').strip()[:140]
+    if not label:fail('Image label required.')
+    declared=str(body.get('mime_type') or '')
+    if declared not in ('image/jpeg','image/png','image/webp'):fail('Unsupported image type.',415)
+    try:raw=base64.b64decode(body.get('base64') or '',validate=True)
+    except Exception:fail('Invalid image encoding.',400)
+    if len(raw)>5*1024*1024 or not raw:fail('Image exceeds the limit.',413)
+    return label,raw
+
+def create_image(f,actor,handler):
+    from PIL import Image,ImageOps,UnidentifiedImageError
+    label,raw=receive_upload(handler)
+    try:
+        Image.MAX_IMAGE_PIXELS=12000000
+        with Image.open(io.BytesIO(raw)) as original:
+            original.verify()
+        with Image.open(io.BytesIO(raw)) as original:
+            if original.width>5000 or original.height>5000:fail('Image dimensions exceed limit.',413)
+            img=ImageOps.exif_transpose(original)
+            img.thumbnail((2400,2400))
+            if img.mode not in ('RGB','RGBA'):img=img.convert('RGB')
+            out=io.BytesIO()
+            img.save(out,format='WEBP',quality=88,method=4)
+            data=out.getvalue()
+    except (UnidentifiedImageError,Image.DecompressionBombError,ValueError):
+        fail('Could not validate this image.',415)
+    aid=str(uuid.uuid4())
+    key='comedy/assets/'+actor['id']+'/'+aid+'.webp'
+    sha=f.store(key,data,'image/webp')
+    rows=f.db('comedy_assets','POST',{'id':aid,'owner_id':actor['id'],'object_key':key,
+        'label':label,'mime_type':'image/webp','bytes':len(data),'sha256':sha,
+        'consent_confirmed':True},select='id,label,bytes,created_at')
+    return {'ok':True,'asset':rows[0]}
+
+def asset_url(f,actor,aid):
+    try:aid=f.uid(aid)
+    except Exception:fail('Invalid asset reference.',404)
+    rows=f.db('comedy_assets',filters={'id':'eq.'+aid,'owner_id':'eq.'+actor['id']},
+        select='id,object_key',limit=1)
+    if not rows:fail('Asset does not belong to this account.',404)
+    if not rows[0]['object_key'].startswith('comedy/assets/'+actor['id']+'/'):
+        fail('Asset path is not authorized.',403)
+    return f.signed(rows[0]['object_key'])
+
+def list_private(f,actor):
+    drafts=f.db('comedy_routines',filters={'owner_id':'eq.'+actor['id']},
+        select='id,comedian_id,title,script,rating,state,rights_confirmed,duration_ms,created_at',
+        order='created_at.desc',limit=200)
+    plans=f.db('comedy_batch_plans',filters={'owner_id':'eq.'+actor['id']},
+        select='id,request_id,routine_ids,status,created_at',order='created_at.desc',limit=100)
+    assets=f.db('comedy_assets',filters={'owner_id':'eq.'+actor['id']},
+        select='id,label,bytes,created_at',order='created_at.desc',limit=100)
+    return {'routines':drafts,'batches':plans,'assets':assets,'verified':True}
+
+def plan_batch(f,actor,b):
+    raw=b.get('routine_ids')
+    if not isinstance(raw,list) or not 1<=len(raw)<=10:fail('Choose 1–10 actual saved routines.')
+    try:ids=[f.uid(x) for x in raw];request_id=f.uid(b.get('request_id'))
+    except Exception:fail('Invalid batch or routine identifier.')
+    if len(set(ids))!=len(ids):fail('Do not select a routine twice.')
+    drafts=f.db('comedy_routines',filters={'owner_id':'eq.'+actor['id'],
+        'id':'in.('+','.join(ids)+')'},select='id,title,rating,comedian_id,state,rights_confirmed',limit=10)
+    if len(drafts)!=len(ids) or any(not r['rights_confirmed'] or r['state'] not in ('draft','script_approved','approved') for r in drafts):
+        fail('The selected routines must be owned and rights-confirmed.',403)
+    seen={r['id']:r for r in drafts}
+    settings=b.get('studio_settings') or {}
+    if not isinstance(settings,dict):fail('Invalid studio settings.')
+    capacity=settings.get('audience_size',100)
+    if type(capacity) is not int or capacity not in (25,50,100,150,250):fail('Invalid audience capacity.')
+    if settings.get('room_tone','intimate') not in ('intimate','warm','lively'):fail('Invalid club acoustics.')
+    if settings.get('laugh_intensity','natural') not in ('subtle','natural','lively'):fail('Invalid laughter intensity.')
+    if type(settings.get('crowd_work',True)) is not bool or type(settings.get('callback',True)) is not bool:
+        fail('Invalid audience interaction settings.')
+    photo_id=settings.get('asset_id')
+    if photo_id:
+        asset=f.db('comedy_assets',filters={'id':'eq.'+f.uid(photo_id),
+          'owner_id':'eq.'+actor['id']},select='id',limit=1)
+        if not asset:fail('Choose an uploaded asset belonging to your account.')
+    target_id=str(b.get('station_id') or '').strip()
+    destination={'mode':'private'} if not target_id else {'mode':'manual_stage_request','station_id':target_id}
+    if target_id:
+        eligible={v['id'] for v in eligible_station_list(f,actor)['stations']}
+        if target_id not in eligible:fail('Station is not eligible for this account.',403)
+        if any(seen[i]['rating']=='R' for i in ids):fail('R-rated routines require an independently protected adult station.',403)
+    manifest={'version':'comedy-production-v1','stage':'planned_only','created_for':actor['id'],
+        'studio_settings':{'audience_size':capacity,
+            'room_tone':settings.get('room_tone','intimate'),
+            'laugh_intensity':settings.get('laugh_intensity','natural'),
+            'crowd_work':settings.get('crowd_work',True),
+            'callback':settings.get('callback',True),'asset_id':photo_id},
+        'destination':destination,
+        'routine_order':[{'id':i,'title':seen[i]['title'],'rating':seen[i]['rating'],
+            'comedian_id':seen[i]['comedian_id'],'target_duration_seconds':180} for i in ids],
+        'intro_seconds':5,'ambient_room':'configured_in_studio',
+        'stems':['comedian','audience_reply','laughter','room_tone','liner'],
+        'callback_required':True,'audio_rendered':False,
+        'external_provider_dispatch':False,'maestro_published':False,
+        'cost_cap_cents':0}
+    prior=f.db('comedy_batch_plans',filters={'owner_id':'eq.'+actor['id'],
+        'request_id':'eq.'+request_id},select='id,request_id,routine_ids,status',limit=1)
+    if prior:
+        if prior[0]['routine_ids']!=ids:fail('A previous batch used this request ID for different routines.',409)
+        return {'ok':True,'batch':prior[0],'replayed':True}
+    try:
+        saved=f.db('comedy_batch_plans','POST',{'owner_id':actor['id'],
+            'request_id':request_id,'routine_ids':ids,'prompt_manifest':manifest,
+            'status':'planned','external_spend_authorized':False,'provider_spend_cap_cents':0},
+            select='id,request_id,routine_ids,status,created_at')
+        return {'ok':True,'batch':saved[0],'replayed':False}
+    except Exception:
+        recovered=f.db('comedy_batch_plans',filters={'owner_id':'eq.'+actor['id'],
+            'request_id':'eq.'+request_id},select='id,request_id,routine_ids,status',limit=1)
+        if recovered and recovered[0]['routine_ids']==ids:return {'ok':True,'batch':recovered[0],'replayed':True}
+        fail('Batch creation outcome uncertain; check saved batches before retrying.',409)
+
+def eligible_station_list(f,actor):
+    from station_libraries import allowed,entitlement,settings
+    all_stations=f.db('stations',filters={} if actor['admin'] else {'owner_id':'eq.'+actor['id']},
+        select='id,owner_id,name,status,visibility,azuracast_station_id',limit=100)
+    allowed_stations=[]
+    for st in all_stations:
+        if not st.get('azuracast_station_id') or st.get('status')!='live':continue
+        try:allowed(f,actor,st,'upload')
+        except Exception:continue
+        allowed_stations.append({'id':st['id'],'name':st['name'],
+            'max_rating':'PG-13','adult_content_enabled':False,
+            'may_request_staging':True,
+            'note':'Verified stage eligibility only. Does not schedule broadcast.'})
+    return {'stations':allowed_stations,'verified':True,'adult_stations_disabled':True}
+
 def handle(handler,method,f):
     path=urlsplit(handler.path).path
     try:
@@ -88,10 +230,27 @@ def handle(handler,method,f):
             handler.end_headers()
             return
         actor=auth(f,handler)
+        if path=='/comedy/assets' and method=='POST':
+            return handler.respond(201,create_image(f,actor,handler))
+        if path.startswith('/comedy/assets/') and method=='GET':
+            url=asset_url(f,actor,path.rsplit('/',1)[-1])
+            handler.send_response(302)
+            handler.send_header('Location',url)
+            handler.send_header('Cache-Control','no-store')
+            handler.send_header('Content-Length','0')
+            handler.end_headers()
+            return
+        if path=='/comedy/private' and method=='GET':
+            return handler.respond(200,list_private(f,actor))
+        if path=='/comedy/stations' and method=='GET':
+            return handler.respond(200,eligible_station_list(f,actor))
         if path=='/comedy/drafts':
             body=receive(handler)
             if body.get('action')!='create':fail('Unsupported action.')
             return handler.respond(201,create_draft(f,actor,body))
+        if path=='/comedy/batches/plan':
+            body=receive(handler)
+            return handler.respond(201,plan_batch(f,actor,body))
         return handler.respond(404,{'error':'Not found.'})
     except AccessError as e:return handler.respond(e.status,{'error':str(e)})
     except Exception:return handler.respond(500,{'error':'Comedy service unavailable; no changes were made.'})

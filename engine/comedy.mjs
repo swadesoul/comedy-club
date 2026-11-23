@@ -11,7 +11,7 @@ export const CAST = Object.freeze([
 export const DEFAULT_SETTINGS = Object.freeze({
   comedian:'marcus',rating:'PG-13',roomSize:100,durationSeconds:180,
   crowdWork:true,callback:true,roomTone:'intimate',laughIntensity:'natural',
-  introSeconds:5,locale:'en-US',musicBed:false
+  introSeconds:5,introAudienceSeconds:3.5,locale:'en-US',musicBed:false
 });
 function assert(condition,message){if(!condition)throw new Error(message);}
 export function validateSettings(input={}){
@@ -21,6 +21,7 @@ export function validateSettings(input={}){
  assert(ROOMS.includes(Number(s.roomSize)),'Invalid room size');
  assert(Number.isInteger(Number(s.durationSeconds)) && +s.durationSeconds>=60 && +s.durationSeconds<=180,'Set 60–180 seconds');
  assert(s.introSeconds===5,'Reuse the approved five-second liner');
+ assert(typeof s.introAudienceSeconds==='number' && Number.isFinite(s.introAudienceSeconds) && s.introAudienceSeconds>=1.5 && s.introAudienceSeconds<=8,'Opening audience response must be 1.5-8 seconds after the intro');
  assert(['intimate','warm','lively'].includes(s.roomTone),'Invalid room tone');
  assert(['subtle','natural','lively'].includes(s.laughIntensity),'Invalid laughter profile');
  assert(typeof s.crowdWork==='boolean' && typeof s.callback==='boolean','Invalid audience options');
@@ -35,19 +36,25 @@ export function createRoutine({title,script,settings={},source='authored',rights
 }
 export function makeCuePlan(routine){
  const r=createRoutine(routine);
- const max=r.settings.durationSeconds, spoken=max-5;
+ const max=r.settings.durationSeconds;
+ const openingLaugh=r.settings.introAudienceSeconds;
+ const speechStart=5+openingLaugh;
+ const spoken=max-speechStart;
+ assert(spoken>=45,'Time budget insufficient after intro and opening crowd');
  const stages=[
-  {id:'liner',at:0,seconds:5,stem:'approved-station-liner',instruction:'Play existing approved 5-second liner exactly once'},
-  {id:'setup',at:5,seconds:Math.round(spoken*.22),stem:'comedian',instruction:'Establish premise and seed'},
-  {id:'escalation',at:Math.round(5+spoken*.22),seconds:Math.round(spoken*.33),stem:'comedian',instruction:'Escalate and vary punchlines'},
-  {id:'crowd',at:Math.round(5+spoken*.55),seconds:Math.round(spoken*.18),stem:'audience-member',instruction:r.settings.crowdWork?'Audience reply and comedian response; location-linked voice':'Natural group laughter, no forced reply'},
-  {id:'callback',at:Math.round(5+spoken*.73),seconds:Math.round(spoken*.21),stem:'comedian',instruction:r.settings.callback?'Return to exact opening seed with surprising payoff':'Build final punchline without mandatory callback'},
-  {id:'outro',at:Math.round(5+spoken*.94),seconds:Math.max(0,max-Math.round(5+spoken*.94)),stem:'crowd',instruction:'Applause taper; do not mask the final word'}
+  {id:'liner',at:0,seconds:5,stem:'approved-station-liner',instruction:'Play approved five-second MAESTRO comedy introduction first; no laughter ahead of the announcement'},
+  {id:'intro-crowd',at:5,seconds:openingLaugh,stem:'crowd-laughter',instruction:'After the introduction, bring in a spatially diffuse real audience response and decay naturally before the comedian begins'},
+  {id:'setup',at:speechStart,seconds:Math.round(spoken*.22),stem:'comedian',instruction:'Enter after the room settles; establish premise and seed'},
+  {id:'escalation',at:Math.round(speechStart+spoken*.22),seconds:Math.round(spoken*.33),stem:'comedian',instruction:'Escalate and vary punchlines'},
+  {id:'crowd',at:Math.round(speechStart+spoken*.55),seconds:Math.round(spoken*.18),stem:'audience-member',instruction:r.settings.crowdWork?'Audience reply and comedian response; location-linked voice':'Natural group laughter, no forced reply'},
+  {id:'callback',at:Math.round(speechStart+spoken*.73),seconds:Math.round(spoken*.21),stem:'comedian',instruction:r.settings.callback?'Return to exact opening seed with surprising payoff':'Build final punchline without mandatory callback'},
+  {id:'outro',at:Math.round(speechStart+spoken*.94),seconds:Math.max(0,max-Math.round(speechStart+spoken*.94)),stem:'crowd',instruction:'Applause taper; do not mask the final word'}
  ];
  return {title:r.title,settings:r.settings,stages,requirements:{
   separateStems:['comedian','audience-members','crowd-laughter','club-ambience','approved-station-liner'],
   originalVoicesOnly:true,rightsConfirmed:true,needsListeningReview:true,
-  laughRule:'Start after marked punchline word-end; wait for measured laugh decay before next line',
+  introRule:'Comedy introduction at 0:00, then audience reaction, then comedian when laughter naturally decays; never pre-roll laughter',
+  laughRule:'Start after marked punchline word-end; wait for measured laugh decay before next line; automated audience is an acoustic simulation, not a live crowd',
   timingRule:'The planned timestamps are editable targets; actual final audio must be measured and <= durationSeconds',
   callbackMap:r.settings.callback?['seed','reinforcement','return','payoff']:[],
   radioHandoff:'manual approval only',costAuthorization:'not granted'

@@ -95,6 +95,22 @@ def live_take_review(f,actor,routine_id):
         'duration_seconds':24.98,'take_type':'opening_only',
         'published':False,'state':'needs_review'}
 
+def sample_sixty_review(f,actor,routine_id):
+    pilot='026c0be2-62e3-41b3-886f-7f3a9b427980'
+    try:rid=f.uid(routine_id)
+    except Exception:fail('Invalid routine.',404)
+    if rid!=pilot:fail('No 60-second sample for this routine.',404)
+    rows=f.db('comedy_routines',
+        filters={'id':'eq.'+rid,'owner_id':'eq.'+actor['id']},
+        select='id,state',limit=1)
+    if len(rows)!=1 or rows[0]['state']!='needs_review':
+        fail('Unreviewed sample is unavailable for this account.',404)
+    key='comedy/review/'+actor['id']+'/'+rid+'/smart-house-60sec-intro-first-unreviewed.mp3'
+    return {'ok':True,'audio_url':f.signed(key),'expires_seconds':900,
+            'duration_seconds':60.0,'source':'existing Kokoro stems / RESINGLAB mix',
+            'intro_first':True,'published':False,'state':'needs_review'}
+
+
 def receive_upload(handler):
     try:length=int(handler.headers.get('Content-Length','0'))
     except ValueError:fail('Invalid upload length.',400)
@@ -154,6 +170,7 @@ def list_private(f,actor):
     for draft in drafts:
         draft['audio_ready']=bool(draft.pop('audio_b2_key',None))
         draft['live_take_ready']=draft['id']=='026c0be2-62e3-41b3-886f-7f3a9b427980' and draft['state']=='needs_review'
+        draft['sixty_sample_ready']=draft['id']=='026c0be2-62e3-41b3-886f-7f3a9b427980' and draft['state']=='needs_review'
     plans=f.db('comedy_batch_plans',filters={'owner_id':'eq.'+actor['id']},
         select='id,request_id,routine_ids,status,created_at',order='created_at.desc',limit=100)
     assets=f.db('comedy_assets',filters={'owner_id':'eq.'+actor['id']},
@@ -262,6 +279,8 @@ def handle(handler,method,f):
             handler.end_headers()
             return
         actor=auth(f,handler)
+        if path.startswith('/comedy/sample-sixty/') and method=='GET':
+            return handler.respond(200,sample_sixty_review(f,actor,path.rsplit('/',1)[-1]))
         if path.startswith('/comedy/live-take/') and method=='GET':
             return handler.respond(200,live_take_review(f,actor,path.rsplit('/',1)[-1]))
         if path.startswith('/comedy/review/') and method=='GET':

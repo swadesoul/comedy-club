@@ -3,9 +3,20 @@ import assert from 'node:assert/strict';
 import {CAST,ROOMS,RATINGS,createRoutine,validateSettings,makeCuePlan,planBatch} from '../engine/comedy.mjs';
 const base={title:'The Emergency Contact',script:'The setup plants an unknown-number detail. The final callback returns to the same unknown number.'};
 test('original cast and production presets',()=>{assert.equal(CAST.length,6);assert.deepEqual(ROOMS,[25,50,100,150,250]);assert.deepEqual(RATINGS,['PG','PG-13','R'])});
-test('default room and timing have safe values',()=>{const s=validateSettings();assert.equal(s.roomSize,100);assert.equal(s.durationSeconds,180);assert.equal(s.introSeconds,5)});
+test('default room and timing have safe values',()=>{const s=validateSettings();assert.equal(s.roomSize,100);assert.equal(s.durationSeconds,180);assert.equal(s.introSeconds,5);assert.equal(s.introAudienceSeconds,3.5)});
 test('invalid duration, rating or cast denied',()=>{assert.throws(()=>validateSettings({durationSeconds:181}));assert.throws(()=>validateSettings({rating:'NC-17'}));assert.throws(()=>validateSettings({comedian:'celebrity'}))});
 test('imported content must have rights confirmation',()=>{assert.throws(()=>createRoutine({...base,source:'imported',rightsConfirmed:false}));assert.equal(createRoutine({...base,source:'imported'}).source,'imported')});
 test('cue plan separates voice and crowd and protects ending',()=>{const p=makeCuePlan(base);assert.equal(p.stages[0].seconds,5);assert.equal(p.stages[0].id,'liner');assert.equal(p.stages.at(-1).id,'outro');assert.deepEqual(p.requirements.callbackMap,['seed','reinforcement','return','payoff']);assert.ok(p.requirements.separateStems.includes('audience-members'))});
 test('ten routine cap and no automatic dispatch',()=>{const list=Array.from({length:10},(_,i)=>({...base,title:'Routine '+i}));const b=planBatch(list);assert.equal(b.numberOfRoutines,10);assert.equal(b.dispatchAuthorized,false);assert.equal(b.guardrails.externalSpendAuthorized,false);assert.throws(()=>planBatch([...list,base]));assert.throws(()=>planBatch([]))});
 test('PG and R options remain isolated in each plan',()=>{const batch=planBatch([{...base,settings:{rating:'PG'}},{...base,title:'R routine',settings:{rating:'R'}}]);assert.equal(batch.requests[0].settings.rating,'PG');assert.equal(batch.requests[1].settings.rating,'R')});
+
+test('opening always starts with liner, then laughter, then the comedian',()=>{
+ const p=makeCuePlan(base);
+ assert.deepEqual(p.stages.slice(0,3).map(x=>x.id),['liner','intro-crowd','setup']);
+ assert.equal(p.stages[0].at,0);
+ assert.equal(p.stages[1].at,5);
+ assert.equal(p.stages[2].at,8.5);
+ assert.match(p.requirements.introRule,/never pre-roll laughter/);
+ assert.throws(()=>validateSettings({introAudienceSeconds:-2}));
+ assert.throws(()=>validateSettings({introAudienceSeconds:15}));
+});
